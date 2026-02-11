@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Application Models
+model User {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  emailVerified  DateTime?
+  name           String?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  preferences    UserPreferences?
+  plannedCourses PlannedCourse[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model UserPreferences {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerGoals         String[] // ["embedded", "software", "hardware", "ml", "signals"]
+  targetGPA           Float?
+  maxWorkloadHours    Int?     // hours per week willing to spend
+  preferredDifficulty String?  // "easy", "moderate", "challenging"
+  completedCourses    String[] // course codes already taken
+  interests           String[] // ["circuits", "programming", "math", "physics"]
+  graduationSemester  String?  // "Spring 2026"
+  currentSemester     String?  // "Spring 2024"
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Course {
+  id                String   @id @default(cuid())
+  code              String   @unique // "ECE 20001"
+  name              String
+  credits           Int
+  description       String?  @db.Text
+  prerequisites     String[] // course codes
+  corequisites      String[]
+  avgGPA            Float?
+  gradeDistribution Json?    // {A: 30, B: 25, C: 20, D: 15, F: 10}
+  difficultyRating  Float?   // 1-5 scale
+  workloadHours     Float?   // estimated hours per week
+  reviewCount       Int      @default(0)
+  reviews           Review[]
+  semesters         String[] // ["Fall", "Spring", "Summer"]
+  department        String   @default("ECE")
+  level             Int?     // 20000, 30000, 40000, 50000
+  careerTags        String[] // ["embedded", "software", "hardware"]
+  interestTags      String[] // ["circuits", "programming"]
+
+  // Professor data
+  professors        String[] // List of professors who teach this course
+
+  // Schedule information
+  typicalDays       String[] // ["MWF", "TR", "MW", "Online"]
+  hasMorningSection Boolean  @default(true)  // before 10 AM
+  hasAfternoonSection Boolean @default(true)
+  hasEveningSection Boolean  @default(false)
+  hasFridayClass    Boolean  @default(true)
+  hasOnlineOption   Boolean  @default(false)
+  hasHybridOption   Boolean  @default(false)
+
+  // Exam/Assignment intensity
+  numExams          Int?     // 0-4 typical exams
+  isProjectBased    Boolean  @default(false)
+  isExamBased       Boolean  @default(true)
+  homeworkIntensity String?  // "light", "moderate", "heavy"
+  isCodingHeavy     Boolean  @default(false)
+  isMathHeavy       Boolean  @default(false)
+  examIntensity     String?  // "low", "medium", "high"
+  hasGroupProjects  Boolean  @default(false)
+
+  // Degree requirement flags
+  isMajorRequirement Boolean @default(false)  // Required for ECE major
+  isTechElective     Boolean @default(false)  // Counts as technical elective
+  isGenEd            Boolean @default(false)  // Counts as gen-ed
+  isLabCredit        Boolean @default(false)  // Counts as lab credit
+  requirementCategory String? // "core", "depth", "breadth", "capstone"
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([department])
+  @@index([level])
+  @@index([isMajorRequirement])
+  @@index([isTechElective])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  rating     Int      // 1-5
+  difficulty Int      // 1-5
+  workload   Int      // hours per week
+  comment    String?  @db.Text
+  professor  String?
+  semester   String?  // "Fall 2023"
+  source     String   // "rmp", "reddit", "internal", "boilerexams"
+  createdAt  DateTime @default(now())
+
+  @@index([courseId])
+  @@index([source])
+}
+
+model PlannedCourse {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseCode String
+  semester   String   // "Fall 2024"
+  year       Int      // 2024
+  status     String   @default("planned") // "planned", "in-progress", "completed"
+  grade      String?  // "A", "B+", etc.
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, courseCode, semester])
+  @@index([userId])
+}
+
+model ScraperLog {
+  id        String   @id @default(cuid())
+  source    String   // "catalog", "boilerexams", "rmp"
+  status    String   // "success", "partial", "failed"
+  records   Int      @default(0)
+  error     String?  @db.Text
+  duration  Int?     // milliseconds
+  createdAt DateTime @default(now())
+
+  @@index([source])
+  @@index([createdAt])
+}
