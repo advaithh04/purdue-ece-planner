@@ -26,10 +26,10 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" variant="purdue" asChild>
-                <Link href="/login">Get Started Free</Link>
+                <Link href="/courses">Browse Courses</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/courses">Browse Courses</Link>
+                <Link href="/finder">Course Finder</Link>
               </Button>
             </div>
           </div>
@@ -150,10 +150,10 @@ export default function HomePage() {
             <CardContent className="flex flex-col items-center text-center py-12">
               <h2 className="text-3xl font-bold mb-4">Ready to Optimize Your ECE Journey?</h2>
               <p className="text-lg mb-6 opacity-80 max-w-xl">
-                Join hundreds of Purdue ECE students who are making smarter course decisions
+                Explore 75+ ECE courses with real GPA data and difficulty ratings
               </p>
               <Button size="lg" variant="secondary" asChild>
-                <Link href="/login">Start Planning Now</Link>
+                <Link href="/courses">Explore All Courses</Link>
               </Button>
             </CardContent>
           </Card>

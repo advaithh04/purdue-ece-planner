@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { DEMO_COURSES, findCourseByCode } from '@/lib/demo-courses';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
+  const courseCode = decodeURIComponent(params.code);
+
   try {
-    const courseCode = decodeURIComponent(params.code);
+    if (!process.env.DATABASE_URL) throw new Error('No database');
+    const prisma = (await import('@/lib/prisma')).default;
 
     const course = await prisma.course.findUnique({
       where: { code: courseCode },
@@ -19,12 +22,17 @@ export async function GET(
     });
 
     if (!course) {
+      // Try demo data fallback
+      const demoCourse = findCourseByCode(courseCode);
+      if (demoCourse) return NextResponse.json(demoCourse);
       return NextResponse.json({ error: 'Course not found' }, { status: 404 });
     }
 
     return NextResponse.json(course);
   } catch (error) {
-    console.error('Course detail API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Fallback to demo data
+    const demoCourse = findCourseByCode(courseCode);
+    if (demoCourse) return NextResponse.json(demoCourse);
+    return NextResponse.json({ error: 'Course not found' }, { status: 404 });
   }
 }

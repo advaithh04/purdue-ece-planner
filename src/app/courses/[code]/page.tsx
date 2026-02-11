@@ -288,11 +288,17 @@ export default function CourseDetailPage() {
                   <h4 className="font-medium mb-2">Prerequisites</h4>
                   <div className="flex flex-wrap gap-2">
                     {course.prerequisites.map((prereq) => (
-                      <Link key={prereq} href={`/courses/${encodeURIComponent(prereq)}`}>
-                        <Badge variant="outline" className="cursor-pointer hover:bg-muted">
+                      prereq.startsWith('ECE') ? (
+                        <Link key={prereq} href={`/courses/${encodeURIComponent(prereq)}`}>
+                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">
+                            {prereq}
+                          </Badge>
+                        </Link>
+                      ) : (
+                        <Badge key={prereq} variant="outline" className="opacity-70">
                           {prereq}
                         </Badge>
-                      </Link>
+                      )
                     ))}
                   </div>
                 </div>
