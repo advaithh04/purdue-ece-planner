@@ -1169,7 +1169,7 @@ export const DEMO_COURSES: DemoCourse[] = [
     interestTags: ['physics', 'quantum', 'devices'], level: 55000,
     professors: ['Muhammad Alam', 'Supriyo Datta'], typicalDays: ['MWF'],
     hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false,
-    hasFridoontyClass: true, hasOnlineOption: false, hasHybridOption: false,
+    hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false,
     numExams: 3, isProjectBased: false, isExamBased: true, homeworkIntensity: 'heavy',
     isCodingHeavy: false, isMathHeavy: true, examIntensity: 'high', hasGroupProjects: false,
     isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false,
