@@ -3,10 +3,17 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { prisma } from './prisma';
+
+const hasDatabase = !!process.env.DATABASE_URL;
+
+const getAdapter = () => {
+  if (!hasDatabase) return undefined;
+  const { prisma } = require('./prisma');
+  return PrismaAdapter(prisma) as any;
+};
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: getAdapter(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
@@ -16,7 +23,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_ID || '',
       clientSecret: process.env.GITHUB_SECRET || '',
     }),
-    // Demo credentials for testing without OAuth
     CredentialsProvider({
       name: 'Demo Account',
       credentials: {
@@ -25,7 +31,15 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email) return null;
 
-        // Find or create demo user
+        if (!hasDatabase) {
+          return {
+            id: 'demo-user',
+            email: credentials.email,
+            name: credentials.email.split('@')[0],
+          };
+        }
+
+        const { prisma } = require('./prisma');
         let user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
