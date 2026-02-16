@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import prisma from '@/lib/prisma';
+import { DEMO_COURSES } from '@/lib/demo-courses';
 
 export async function GET() {
   try {
@@ -11,63 +11,96 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user preferences
-    const preferences = await prisma.userPreferences.findUnique({
-      where: { userId: session.user.id },
-    });
+    // Try database first, fallback to demo data
+    if (process.env.DATABASE_URL) {
+      try {
+        const prisma = (await import('@/lib/prisma')).default;
 
-    // Get planned courses
-    const plannedCourses = await prisma.plannedCourse.findMany({
-      where: { userId: session.user.id },
-    });
+        const preferences = await prisma.userPreferences.findUnique({
+          where: { userId: session.user.id },
+        });
 
-    // Calculate completed credits (courses with status 'completed')
-    const completedCourses = plannedCourses.filter((c) => c.status === 'completed');
-    const completedCourseCodes = completedCourses.map((c) => c.courseCode);
+        const plannedCourses = await prisma.plannedCourse.findMany({
+          where: { userId: session.user.id },
+        });
 
-    let completedCredits = 0;
-    if (completedCourseCodes.length > 0) {
-      const courses = await prisma.course.findMany({
-        where: { code: { in: completedCourseCodes } },
-        select: { credits: true },
-      });
-      completedCredits = courses.reduce((sum, c) => sum + c.credits, 0);
+        const completedCourses = plannedCourses.filter((c) => c.status === 'completed');
+        const completedCourseCodes = completedCourses.map((c) => c.courseCode);
+
+        let completedCredits = 0;
+        if (completedCourseCodes.length > 0) {
+          const courses = await prisma.course.findMany({
+            where: { code: { in: completedCourseCodes } },
+            select: { credits: true },
+          });
+          completedCredits = courses.reduce((sum, c) => sum + c.credits, 0);
+        }
+
+        let recommendations: Array<{ code: string; name: string; score: number }> = [];
+
+        if (preferences) {
+          const availableCourses = await prisma.course.findMany({
+            where: {
+              code: {
+                notIn: [...(preferences.completedCourses || []), ...plannedCourses.map((c) => c.courseCode)],
+              },
+            },
+            take: 10,
+            orderBy: { avgGPA: 'desc' },
+          });
+
+          recommendations = availableCourses.map((course) => ({
+            code: course.code,
+            name: course.name,
+            score: calculateSimpleScore(course, preferences),
+          }));
+
+          recommendations.sort((a, b) => b.score - a.score);
+        }
+
+        const nextInMajor = await getNextMajorCourses(completedCourseCodes, plannedCourses.map(c => c.courseCode));
+
+        return NextResponse.json({
+          hasPreferences: !!preferences,
+          plannedCoursesCount: plannedCourses.length,
+          completedCredits,
+          targetCredits: 128,
+          recommendations: recommendations.slice(0, 5),
+          nextInMajor,
+        });
+      } catch (dbError) {
+        console.error('Database error, using demo data:', dbError);
+      }
     }
 
-    // Get top recommendations if user has preferences
-    let recommendations: Array<{ code: string; name: string; score: number }> = [];
-
-    if (preferences) {
-      // Simple recommendation logic - will be enhanced with the full recommendation engine
-      const availableCourses = await prisma.course.findMany({
-        where: {
-          code: {
-            notIn: [...(preferences.completedCourses || []), ...plannedCourses.map((c) => c.courseCode)],
-          },
-        },
-        take: 10,
-        orderBy: { avgGPA: 'desc' },
-      });
-
-      recommendations = availableCourses.map((course) => ({
-        code: course.code,
-        name: course.name,
-        score: calculateSimpleScore(course, preferences),
+    // Demo data fallback
+    const demoNextInMajor = DEMO_COURSES
+      .filter(c => c.isMajorRequirement && c.prerequisites.length === 0)
+      .slice(0, 5)
+      .map(c => ({
+        code: c.code,
+        name: c.name,
+        credits: c.credits,
+        reason: 'No prerequisites required • Core requirement',
       }));
 
-      recommendations.sort((a, b) => b.score - a.score);
-    }
-
-    // Get next courses in major sequence
-    const nextInMajor = await getNextMajorCourses(completedCourseCodes, plannedCourses.map(c => c.courseCode));
+    const demoRecommendations = DEMO_COURSES
+      .filter(c => c.avgGPA && c.avgGPA >= 3.0)
+      .sort((a, b) => (b.avgGPA || 0) - (a.avgGPA || 0))
+      .slice(0, 5)
+      .map(c => ({
+        code: c.code,
+        name: c.name,
+        score: Math.round(70 + (c.avgGPA || 3) * 8),
+      }));
 
     return NextResponse.json({
-      hasPreferences: !!preferences,
-      plannedCoursesCount: plannedCourses.length,
-      completedCredits,
-      targetCredits: 128, // Standard ECE degree requirement
-      recommendations: recommendations.slice(0, 5),
-      nextInMajor,
+      hasPreferences: true,
+      plannedCoursesCount: 0,
+      completedCredits: 0,
+      targetCredits: 128,
+      recommendations: demoRecommendations,
+      nextInMajor: demoNextInMajor,
     });
   } catch (error) {
     console.error('Dashboard API error:', error);
@@ -79,7 +112,7 @@ async function getNextMajorCourses(
   completedCourses: string[],
   plannedCourses: string[]
 ): Promise<Array<{ code: string; name: string; credits: number; reason: string }>> {
-  // Get all major requirement courses
+  const prisma = (await import('@/lib/prisma')).default;
   const majorCourses = await prisma.course.findMany({
     where: {
       isMajorRequirement: true,

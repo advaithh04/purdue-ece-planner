@@ -29,6 +29,19 @@ import {
   X,
 } from 'lucide-react';
 import { formatGPA, getGPAColor, generateSemesters } from '@/lib/utils';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
 interface CourseOption {
   code: string;
@@ -61,6 +74,72 @@ interface SemesterGroup {
   projectedGPA: number;
 }
 
+// Droppable semester component
+function DroppableSemester({ semester, children }: { semester: string; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({ id: semester });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`transition-all ${isOver ? 'ring-2 ring-purdue-gold ring-offset-2 rounded-lg' : ''}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// Draggable course component
+function DraggableCourse({ planned, onRemove }: { planned: PlannedCourse; onRemove: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: planned.id,
+    data: { semester: planned.semester, course: planned },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between p-2 rounded-lg bg-muted/50 group"
+    >
+      <div className="flex items-center gap-2">
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <div>
+          <Link
+            href={`/courses/${encodeURIComponent(planned.courseCode)}`}
+            className="font-medium text-sm hover:text-purdue-gold"
+          >
+            {planned.courseCode}
+          </Link>
+          <p className="text-xs text-muted-foreground">
+            {planned.course?.credits || 3} cr
+            {planned.course?.avgGPA && (
+              <span className={`ml-2 ${getGPAColor(planned.course.avgGPA)}`}>
+                GPA: {formatGPA(planned.course.avgGPA)}
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0"
+        onClick={onRemove}
+      >
+        <Trash2 className="h-4 w-4 text-destructive" />
+      </Button>
+    </div>
+  );
+}
+
 export default function PlannerPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -78,7 +157,12 @@ export default function PlannerPage() {
   const [showCourseDropdown, setShowCourseDropdown] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<CourseOption | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   const semesters = generateSemesters('Spring 2024', 8);
 
@@ -216,6 +300,25 @@ export default function PlannerPage() {
       console.error('Failed to update course:', error);
     }
   }
+
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setActiveDragId(null);
+    const { active, over } = event;
+    if (!over) return;
+
+    const draggedCourse = plannedCourses.find(c => c.id === active.id);
+    const targetSemester = over.id as string;
+
+    if (draggedCourse && semesters.includes(targetSemester) && draggedCourse.semester !== targetSemester) {
+      updateCourse(draggedCourse.id, { semester: targetSemester });
+    }
+  }
+
+  const activeCourse = activeDragId ? plannedCourses.find(c => c.id === activeDragId) : null;
 
   async function generateAdvice() {
     setLoadingAdvice(true);
@@ -392,95 +495,86 @@ export default function PlannerPage() {
         )}
       </Card>
 
-      {/* Semester Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {semesterGroups.map((group) => (
-          <Card key={group.semester} className={group.courses.length > 0 ? '' : 'opacity-60'}>
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg">{group.semester}</CardTitle>
-                  <CardDescription>
-                    {group.totalCredits > 0 ? `${group.totalCredits} credits` : 'No courses'}
-                  </CardDescription>
-                </div>
-                {group.totalCredits > 17 && (
-                  <Badge variant="destructive" className="text-xs">
-                    <AlertTriangle className="h-3 w-3 mr-1" />
-                    Heavy
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              {group.courses.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Drop courses here
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {group.courses.map((planned) => (
-                    <div
-                      key={planned.id}
-                      className="flex items-center justify-between p-2 rounded-lg bg-muted/50 group"
-                    >
-                      <div className="flex items-center gap-2">
-                        <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 cursor-grab" />
-                        <div>
-                          <Link
-                            href={`/courses/${encodeURIComponent(planned.courseCode)}`}
-                            className="font-medium text-sm hover:text-purdue-gold"
-                          >
-                            {planned.courseCode}
-                          </Link>
-                          <p className="text-xs text-muted-foreground">
-                            {planned.course?.credits || 3} cr
-                            {planned.course?.avgGPA && (
-                              <span className={`ml-2 ${getGPAColor(planned.course.avgGPA)}`}>
-                                GPA: {formatGPA(planned.course.avgGPA)}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0"
-                        onClick={() => removeCourse(planned.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+      {/* Semester Grid with Drag and Drop */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {semesterGroups.map((group) => (
+            <DroppableSemester key={group.semester} semester={group.semester}>
+              <Card className={group.courses.length > 0 ? '' : 'opacity-60'}>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{group.semester}</CardTitle>
+                      <CardDescription>
+                        {group.totalCredits > 0 ? `${group.totalCredits} credits` : 'No courses'}
+                      </CardDescription>
                     </div>
-                  ))}
-
-                  {/* Semester Stats */}
-                  {group.courses.length > 0 && (
-                    <div className="pt-2 mt-2 border-t text-xs text-muted-foreground space-y-1">
-                      <div className="flex justify-between">
-                        <span className="flex items-center gap-1">
-                          <TrendingUp className="h-3 w-3" />
-                          Proj. GPA
-                        </span>
-                        <span className={getGPAColor(group.projectedGPA)}>
-                          {group.projectedGPA.toFixed(2)}
-                        </span>
+                    {group.totalCredits > 10 && (
+                      <div>
+                        <Badge variant="destructive" className="text-xs">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          Heavy
+                        </Badge>
+                        <p className="text-xs text-destructive mt-1">Consider reducing</p>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          Difficulty
-                        </span>
-                        <span>{group.avgDifficulty.toFixed(1)}/5</span>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {group.courses.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4 border-2 border-dashed rounded-lg">
+                      Drag courses here
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {group.courses.map((planned) => (
+                        <DraggableCourse
+                          key={planned.id}
+                          planned={planned}
+                          onRemove={() => removeCourse(planned.id)}
+                        />
+                      ))}
+
+                      {/* Semester Stats */}
+                      <div className="pt-2 mt-2 border-t text-xs text-muted-foreground space-y-1">
+                        <div className="flex justify-between">
+                          <span className="flex items-center gap-1">
+                            <TrendingUp className="h-3 w-3" />
+                            Proj. GPA
+                          </span>
+                          <span className={getGPAColor(group.projectedGPA)}>
+                            {group.projectedGPA.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Difficulty
+                          </span>
+                          <span>{group.avgDifficulty.toFixed(1)}/5</span>
+                        </div>
                       </div>
                     </div>
                   )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </CardContent>
+              </Card>
+            </DroppableSemester>
+          ))}
+        </div>
+
+        <DragOverlay>
+          {activeCourse && (
+            <div className="p-2 rounded-lg bg-background border shadow-lg">
+              <span className="font-medium">{activeCourse.courseCode}</span>
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
 
       {/* Empty State */}
       {plannedCourses.length === 0 && (
