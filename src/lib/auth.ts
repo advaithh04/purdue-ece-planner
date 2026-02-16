@@ -31,29 +31,37 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email) return null;
 
-        if (!hasDatabase) {
-          return {
-            id: 'demo-user',
-            email: credentials.email,
-            name: credentials.email.split('@')[0],
-          };
+        // Always return demo user - no database required
+        const demoUser = {
+          id: `demo-${credentials.email.replace(/[^a-z0-9]/gi, '')}`,
+          email: credentials.email,
+          name: credentials.email.split('@')[0],
+        };
+
+        // Try database if available, but fall back to demo on any error
+        if (process.env.DATABASE_URL) {
+          try {
+            const { prisma } = require('./prisma');
+            let user = await prisma.user.findUnique({
+              where: { email: credentials.email },
+            });
+
+            if (!user) {
+              user = await prisma.user.create({
+                data: {
+                  email: credentials.email,
+                  name: credentials.email.split('@')[0],
+                },
+              });
+            }
+            return user;
+          } catch (error) {
+            console.log('Database unavailable, using demo mode');
+            return demoUser;
+          }
         }
 
-        const { prisma } = require('./prisma');
-        let user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
-        if (!user) {
-          user = await prisma.user.create({
-            data: {
-              email: credentials.email,
-              name: credentials.email.split('@')[0],
-            },
-          });
-        }
-
-        return user;
+        return demoUser;
       },
     }),
   ],
