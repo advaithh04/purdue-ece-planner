@@ -100,6 +100,7 @@ function CoursesContent() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Levels</SelectItem>
+            <SelectItem value="10000">10000 Level</SelectItem>
             <SelectItem value="20000">20000 Level</SelectItem>
             <SelectItem value="30000">30000 Level</SelectItem>
             <SelectItem value="40000">40000 Level</SelectItem>
