@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   const level = searchParams.get('level');
   const sort = searchParams.get('sort') || 'code';
   const search = searchParams.get('search');
-  const limit = parseInt(searchParams.get('limit') || '100');
+  const limit = parseInt(searchParams.get('limit') || '500');
 
   try {
     const prisma = (await import('@/lib/prisma')).default;
