@@ -1493,3 +1493,4 @@ export function findCourseByCode(code: string): DemoCourse | undefined {
 export function getCourseCount(): number {
   return DEMO_COURSES.length;
 }
+// Course count: 184 - Updated Mon Feb 16 20:06:16 EST 2026
