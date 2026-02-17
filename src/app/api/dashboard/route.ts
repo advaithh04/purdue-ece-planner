@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { DEMO_COURSES } from '@/lib/demo-courses';
+import { DEMO_COURSES, getDemoPlannedCourses } from '@/lib/demo-courses';
 
 export async function GET() {
   try {
@@ -74,18 +74,24 @@ export async function GET() {
     }
 
     // Demo data fallback
+    const userPlanned = getDemoPlannedCourses(session.user.id);
+    const plannedCodes = userPlanned.map(p => p.courseCode);
+    const completedCodes = userPlanned.filter(p => p.status === 'completed').map(p => p.courseCode);
+
     const demoNextInMajor = DEMO_COURSES
-      .filter(c => c.isMajorRequirement && c.prerequisites.length === 0)
+      .filter(c => c.isMajorRequirement && !plannedCodes.includes(c.code) && !completedCodes.includes(c.code))
+      .filter(c => c.prerequisites.length === 0 || c.prerequisites.every(p => completedCodes.includes(p)))
+      .sort((a, b) => (a.level || 0) - (b.level || 0))
       .slice(0, 5)
       .map(c => ({
         code: c.code,
         name: c.name,
         credits: c.credits,
-        reason: 'No prerequisites required • Core requirement',
+        reason: c.prerequisites.length === 0 ? 'No prerequisites required' : `Prereqs completed: ${c.prerequisites.join(', ')}`,
       }));
 
     const demoRecommendations = DEMO_COURSES
-      .filter(c => c.avgGPA && c.avgGPA >= 3.0)
+      .filter(c => c.avgGPA && c.avgGPA >= 3.0 && !plannedCodes.includes(c.code) && !completedCodes.includes(c.code))
       .sort((a, b) => (b.avgGPA || 0) - (a.avgGPA || 0))
       .slice(0, 5)
       .map(c => ({
@@ -96,8 +102,11 @@ export async function GET() {
 
     return NextResponse.json({
       hasPreferences: true,
-      plannedCoursesCount: 0,
-      completedCredits: 0,
+      plannedCoursesCount: userPlanned.length,
+      completedCredits: userPlanned.filter(p => p.status === 'completed').reduce((sum, p) => {
+        const course = DEMO_COURSES.find(c => c.code === p.courseCode);
+        return sum + (course?.credits || 0);
+      }, 0),
       targetCredits: 128,
       recommendations: demoRecommendations,
       nextInMajor: demoNextInMajor,

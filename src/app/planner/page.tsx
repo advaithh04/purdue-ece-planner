@@ -160,11 +160,16 @@ export default function PlannerPage() {
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Program date settings
+  const [startYear, setStartYear] = useState(2024);
+  const [startTerm, setStartTerm] = useState<'Fall' | 'Spring'>('Fall');
+  const [numYears, setNumYears] = useState(4);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
-  const semesters = generateSemesters('Spring 2024', 8);
+  const semesters = generateSemesters(`${startTerm} ${startYear}`, numYears * 2);
 
   // Fetch available courses on mount
   useEffect(() => {
@@ -385,6 +390,33 @@ export default function PlannerPage() {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Start:</span>
+            <Select value={startTerm} onValueChange={(v) => setStartTerm(v as 'Fall' | 'Spring')}>
+              <SelectTrigger className="w-20 h-8"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Fall">Fall</SelectItem>
+                <SelectItem value="Spring">Spring</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={startYear.toString()} onValueChange={(v) => setStartYear(parseInt(v))}>
+              <SelectTrigger className="w-20 h-8"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {[2023, 2024, 2025, 2026, 2027, 2028].map(y => (
+                  <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-muted-foreground ml-2">Years:</span>
+            <Select value={numYears.toString()} onValueChange={(v) => setNumYears(parseInt(v))}>
+              <SelectTrigger className="w-16 h-8"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {[3, 4, 5, 6].map(n => (
+                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Total Planned</p>
             <p className="text-2xl font-bold">{totalPlannedCredits} Credits</p>

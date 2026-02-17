@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { DEMO_COURSES, findCourseByCode } from '@/lib/demo-courses';
-
-// In-memory storage for demo mode (resets on server restart)
-const demoPlannedCourses: Map<string, any[]> = new Map();
+import { findCourseByCode, getDemoPlannedCourses, setDemoPlannedCourses } from '@/lib/demo-courses';
 
 export async function GET() {
   try {
@@ -42,7 +39,7 @@ export async function GET() {
     }
 
     // Demo mode fallback
-    const userPlanned = demoPlannedCourses.get(session.user.id) || [];
+    const userPlanned = getDemoPlannedCourses(session.user.id);
     const plannedWithDetails = userPlanned.map((planned) => ({
       ...planned,
       course: findCourseByCode(planned.courseCode),
@@ -101,7 +98,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Course not found' }, { status: 400 });
     }
 
-    const userPlanned = demoPlannedCourses.get(session.user.id) || [];
+    const userPlanned = getDemoPlannedCourses(session.user.id);
     const existing = userPlanned.findIndex(p => p.courseCode === courseCode && p.semester === semester);
 
     const newPlanned = {
@@ -119,7 +116,7 @@ export async function POST(request: NextRequest) {
       userPlanned.push(newPlanned);
     }
 
-    demoPlannedCourses.set(session.user.id, userPlanned);
+    setDemoPlannedCourses(session.user.id, userPlanned);
     return NextResponse.json({ success: true, plannedCourse: newPlanned });
   } catch (error) {
     console.error('Planner POST error:', error);
@@ -165,7 +162,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Demo mode fallback
-    const userPlanned = demoPlannedCourses.get(session.user.id) || [];
+    const userPlanned = getDemoPlannedCourses(session.user.id);
     const idx = userPlanned.findIndex(p => p.id === id);
     if (idx < 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
@@ -177,7 +174,7 @@ export async function PUT(request: NextRequest) {
     if (status) userPlanned[idx].status = status;
     if (grade !== undefined) userPlanned[idx].grade = grade;
 
-    demoPlannedCourses.set(session.user.id, userPlanned);
+    setDemoPlannedCourses(session.user.id, userPlanned);
     return NextResponse.json({ success: true, plannedCourse: userPlanned[idx] });
   } catch (error) {
     console.error('Planner PUT error:', error);
@@ -212,12 +209,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Demo mode fallback
-    const userPlanned = demoPlannedCourses.get(session.user.id) || [];
+    const userPlanned = getDemoPlannedCourses(session.user.id);
     const idx = userPlanned.findIndex(p => p.id === id);
     if (idx < 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     userPlanned.splice(idx, 1);
-    demoPlannedCourses.set(session.user.id, userPlanned);
+    setDemoPlannedCourses(session.user.id, userPlanned);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Planner DELETE error:', error);
