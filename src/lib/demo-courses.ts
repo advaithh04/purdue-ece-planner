@@ -225,6 +225,23 @@ export const DEMO_COURSES: DemoCourse[] = [
     gradeDistribution: { A: 14, B: 24, C: 34, D: 17, F: 11 },
     reviews: []
   },
+  {
+    id: 'c9b', code: 'ECE 30653', name: 'Introduction to Nanotechnology and Quantum Science and Technology', credits: 3,
+    description: 'Fundamentals of nanoscience, quantum mechanics for nanostructures, and nanodevice applications.',
+    avgGPA: 3.12, difficultyRating: 3.3, workloadHours: 11, reviewCount: 56,
+    prerequisites: ['PHYS 27200'], corequisites: [],
+    semesters: ['Spring'], careerTags: ['hardware', 'vlsi'],
+    interestTags: ['physics', 'research', 'devices'], level: 30000,
+    professors: ['Muhammad Alam', 'Zhihong Chen'], typicalDays: ['TR'],
+    hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false,
+    hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false,
+    numExams: 2, isProjectBased: false, isExamBased: true, homeworkIntensity: 'moderate',
+    isCodingHeavy: false, isMathHeavy: true, examIntensity: 'medium', hasGroupProjects: false,
+    isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false,
+    requirementCategory: 'depth',
+    gradeDistribution: { A: 30, B: 36, C: 22, D: 8, F: 4 },
+    reviews: []
+  },
   // 36000-level courses
   {
     id: 'c10', code: 'ECE 36200', name: 'Microprocessor Systems and Interfacing', credits: 4,
@@ -283,8 +300,8 @@ export const DEMO_COURSES: DemoCourse[] = [
     reviews: []
   },
   {
-    id: 'c13', code: 'ECE 43700', name: 'Introduction to VLSI Design', credits: 3,
-    description: 'MOS transistor theory, CMOS logic design, standard cell design methodology, layout techniques, and timing analysis.',
+    id: 'c13', code: 'ECE 43700', name: 'Computer Design and Prototyping', credits: 4,
+    description: 'Hardware design, FPGA prototyping, system integration, and digital system implementation.',
     avgGPA: 2.82, difficultyRating: 3.9, workloadHours: 14, reviewCount: 98,
     prerequisites: ['ECE 27000'], corequisites: [],
     semesters: ['Fall', 'Spring'], careerTags: ['vlsi', 'hardware'],
@@ -518,7 +535,7 @@ export const DEMO_COURSES: DemoCourse[] = [
   },
   // Additional core/required courses
   {
-    id: 'c26', code: 'ECE 29401', name: 'Junior Seminar', credits: 0,
+    id: 'c26', code: 'ECE 29401', name: 'Electrical and Computer Engineering Sophomore Seminar', credits: 1,
     description: 'Professional development seminar covering career planning, resume writing, technical communication, and ethics.',
     avgGPA: 3.85, difficultyRating: 1.2, workloadHours: 2, reviewCount: 245,
     prerequisites: [], corequisites: [],
@@ -535,7 +552,7 @@ export const DEMO_COURSES: DemoCourse[] = [
     reviews: []
   },
   {
-    id: 'c27', code: 'ECE 39401', name: 'Senior Seminar', credits: 0,
+    id: 'c27', code: 'ECE 39401', name: 'Professional Communication and Diversity', credits: 1,
     description: 'Continuation of professional development with focus on senior design preparation and career readiness.',
     avgGPA: 3.82, difficultyRating: 1.3, workloadHours: 2, reviewCount: 198,
     prerequisites: ['ECE 29401'], corequisites: [],
@@ -549,6 +566,23 @@ export const DEMO_COURSES: DemoCourse[] = [
     isMajorRequirement: true, isTechElective: false, isGenEd: false, isLabCredit: false,
     requirementCategory: 'core',
     gradeDistribution: { A: 88, B: 10, C: 2, D: 0, F: 0 },
+    reviews: []
+  },
+  {
+    id: 'c27b', code: 'ECE 49401', name: 'Professional Communication Capstone', credits: 1,
+    description: 'Capstone professional development course focusing on technical communication and career preparation.',
+    avgGPA: 3.80, difficultyRating: 1.3, workloadHours: 2, reviewCount: 175,
+    prerequisites: ['ECE 39401'], corequisites: [],
+    semesters: ['Fall', 'Spring'], careerTags: ['software', 'hardware', 'ml'],
+    interestTags: ['career', 'communication'], level: 49000,
+    professors: ['Various Faculty'], typicalDays: ['W'],
+    hasMorningSection: false, hasAfternoonSection: true, hasEveningSection: false,
+    hasFridayClass: false, hasOnlineOption: true, hasHybridOption: true,
+    numExams: 0, isProjectBased: false, isExamBased: false, homeworkIntensity: 'light',
+    isCodingHeavy: false, isMathHeavy: false, examIntensity: 'low', hasGroupProjects: false,
+    isMajorRequirement: true, isTechElective: false, isGenEd: false, isLabCredit: false,
+    requirementCategory: 'core',
+    gradeDistribution: { A: 85, B: 12, C: 3, D: 0, F: 0 },
     reviews: []
   },
   {
@@ -954,12 +988,12 @@ export const DEMO_COURSES: DemoCourse[] = [
     reviews: []
   },
   {
-    id: 'c51', code: 'ECE 47300', name: 'Introduction to Nanotechnology', credits: 3,
-    description: 'Fundamentals of nanoscience, quantum mechanics for nanostructures, and nanodevice applications.',
-    avgGPA: 3.12, difficultyRating: 3.3, workloadHours: 11, reviewCount: 56,
-    prerequisites: ['PHYS 27200'], corequisites: [],
-    semesters: ['Spring'], careerTags: ['hardware', 'vlsi'],
-    interestTags: ['physics', 'research', 'devices'], level: 47000,
+    id: 'c51', code: 'ECE 47300', name: 'Introduction to Artificial Intelligence', credits: 3,
+    description: 'Search, knowledge representation, planning, learning, and AI applications.',
+    avgGPA: 2.95, difficultyRating: 3.5, workloadHours: 12, reviewCount: 145,
+    prerequisites: ['ECE 36800'], corequisites: [],
+    semesters: ['Spring'], careerTags: ['ml', 'software'],
+    interestTags: ['ai', 'programming'], level: 47000,
     professors: ['Muhammad Alam', 'Zhihong Chen'], typicalDays: ['TR'],
     hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false,
     hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false,
@@ -1537,13 +1571,9 @@ const ECE_36900 = { id: 'ece36900', code: 'ECE 36900', name: 'Discrete Mathemati
 const COMPE_SELECTIVES = [
   { id: 'ece30834', code: 'ECE 30834', name: 'Fundamentals Of Computer Graphics', credits: 3, description: 'Graphics pipeline, rendering, transformations, shading.', avgGPA: 2.95, difficultyRating: 3.4, workloadHours: 11, reviewCount: 85, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall'], careerTags: ['software', 'graphics'], interestTags: ['graphics', 'visualization'], level: 30000, professors: ['Various'], typicalDays: ['TR'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: true, examIntensity: 'medium', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 26, B: 36, C: 26, D: 8, F: 4 }, reviews: [] },
   { id: 'ece40400', code: 'ECE 40400', name: 'Introduction To Computer Security', credits: 3, description: 'Security principles, vulnerabilities, cryptography, secure systems.', avgGPA: 2.98, difficultyRating: 3.3, workloadHours: 11, reviewCount: 145, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['security', 'software'], interestTags: ['security'], level: 40000, professors: ['Various'], typicalDays: ['MWF'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'moderate', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'medium', hasGroupProjects: true, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 26, B: 38, C: 24, D: 8, F: 4 }, reviews: [] },
-  { id: 'ece43701', code: 'ECE 43700', name: 'Computer Design And Prototyping', credits: 3, description: 'Hardware design, FPGA prototyping, system integration.', avgGPA: 2.85, difficultyRating: 3.5, workloadHours: 12, reviewCount: 95, prerequisites: ['ECE 36200'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['hardware', 'embedded'], interestTags: ['digital', 'design'], level: 43000, professors: ['Various'], typicalDays: ['TR'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'medium', hasGroupProjects: true, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 22, B: 36, C: 28, D: 9, F: 5 }, reviews: [] },
-  { id: 'ece46101', code: 'ECE 46100', name: 'Software Engineering', credits: 3, description: 'Software development lifecycle, agile, testing, design patterns.', avgGPA: 3.05, difficultyRating: 3.1, workloadHours: 11, reviewCount: 165, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['software'], interestTags: ['engineering', 'design'], level: 46000, professors: ['Various'], typicalDays: ['TR'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'medium', hasGroupProjects: true, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 28, B: 40, C: 22, D: 6, F: 4 }, reviews: [] },
-  { id: 'ece46901', code: 'ECE 46900', name: 'Operating Systems Engineering', credits: 3, description: 'OS internals, kernel development, system programming.', avgGPA: 2.72, difficultyRating: 3.8, workloadHours: 14, reviewCount: 125, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['systems', 'software'], interestTags: ['os', 'systems'], level: 46000, professors: ['Various'], typicalDays: ['MWF'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'high', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 18, B: 28, C: 34, D: 12, F: 8 }, reviews: [] },
-  { id: 'ece46301', code: 'ECE 46300', name: 'Introduction To Computer Communication Networks', credits: 3, description: 'TCP/IP, routing, protocols, network programming.', avgGPA: 2.88, difficultyRating: 3.4, workloadHours: 11, reviewCount: 185, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['networks', 'software'], interestTags: ['networking'], level: 46000, professors: ['Various'], typicalDays: ['MWF'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'moderate', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'medium', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 24, B: 36, C: 26, D: 9, F: 5 }, reviews: [] },
-  { id: 'ece46801', code: 'ECE 46800', name: 'Introduction To Compilers And Translation Engineering', credits: 3, description: 'Lexical analysis, parsing, code generation, optimization.', avgGPA: 2.82, difficultyRating: 3.7, workloadHours: 14, reviewCount: 95, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall'], careerTags: ['software'], interestTags: ['compilers', 'theory'], level: 46000, professors: ['Various'], typicalDays: ['TR'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'high', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 20, B: 34, C: 28, D: 12, F: 6 }, reviews: [] },
+  { id: 'ece46901', code: 'ECE 46900', name: 'Operating Systems Engineering', credits: 4, description: 'OS internals, kernel development, system programming.', avgGPA: 2.72, difficultyRating: 3.8, workloadHours: 14, reviewCount: 125, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['systems', 'software'], interestTags: ['os', 'systems'], level: 46000, professors: ['Various'], typicalDays: ['MWF'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'high', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 18, B: 28, C: 34, D: 12, F: 8 }, reviews: [] },
+  { id: 'ece46801', code: 'ECE 46800', name: 'Introduction To Compilers And Translation Engineering', credits: 4, description: 'Lexical analysis, parsing, code generation, optimization.', avgGPA: 2.82, difficultyRating: 3.7, workloadHours: 14, reviewCount: 95, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall'], careerTags: ['software'], interestTags: ['compilers', 'theory'], level: 46000, professors: ['Various'], typicalDays: ['TR'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'high', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 20, B: 34, C: 28, D: 12, F: 6 }, reviews: [] },
   { id: 'ece40863', code: 'ECE 40862', name: 'Software For Embedded Systems', credits: 3, description: 'Embedded software design, RTOS, device drivers.', avgGPA: 2.92, difficultyRating: 3.4, workloadHours: 12, reviewCount: 85, prerequisites: ['ECE 36200'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['embedded', 'software'], interestTags: ['embedded', 'systems'], level: 40000, professors: ['Various'], typicalDays: ['MW'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: false, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: false, examIntensity: 'medium', hasGroupProjects: true, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 26, B: 36, C: 26, D: 8, F: 4 }, reviews: [] },
-  { id: 'ece47301', code: 'ECE 47300', name: 'Introduction To Artificial Intelligence', credits: 3, description: 'Search, knowledge representation, planning, learning.', avgGPA: 2.95, difficultyRating: 3.5, workloadHours: 12, reviewCount: 145, prerequisites: ['ECE 36800'], corequisites: [], semesters: ['Fall', 'Spring'], careerTags: ['ml', 'software'], interestTags: ['ai'], level: 47000, professors: ['Various'], typicalDays: ['MWF'], hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false, hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false, numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy', isCodingHeavy: true, isMathHeavy: true, examIntensity: 'medium', hasGroupProjects: false, isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false, requirementCategory: 'compe-selective', gradeDistribution: { A: 26, B: 36, C: 26, D: 8, F: 4 }, reviews: [] },
 ];
 
 // Add all new courses to DEMO_COURSES

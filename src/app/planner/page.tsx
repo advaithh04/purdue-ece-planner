@@ -145,6 +145,7 @@ export default function PlannerPage() {
   const router = useRouter();
   const [plannedCourses, setPlannedCourses] = useState<PlannedCourse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [addingCourse, setAddingCourse] = useState(false);
   const [newCourseCode, setNewCourseCode] = useState('');
   const [newSemester, setNewSemester] = useState('Fall 2024');
@@ -223,16 +224,39 @@ export default function PlannerPage() {
   async function fetchPlan() {
     setLoading(true);
     try {
+      // Try localStorage first
+      const cached = localStorage.getItem('plannedCourses');
+      if (cached) {
+        setPlannedCourses(JSON.parse(cached));
+      }
+      // Then fetch from API (which may have newer data)
       const res = await fetch('/api/planner');
       if (res.ok) {
         const data = await res.json();
-        setPlannedCourses(data.plannedCourses || []);
+        const apiCourses = data.plannedCourses || [];
+        // Merge: use API data if available, otherwise keep local
+        if (apiCourses.length > 0 || !cached) {
+          setPlannedCourses(apiCourses);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch plan:', error);
     } finally {
       setLoading(false);
+      setInitialLoadDone(true);
     }
+  }
+
+  // Save to localStorage when plannedCourses changes
+  useEffect(() => {
+    if (initialLoadDone && plannedCourses.length >= 0) {
+      localStorage.setItem('plannedCourses', JSON.stringify(plannedCourses));
+    }
+  }, [plannedCourses, initialLoadDone]);
+
+  function clearAllCourses() {
+    setPlannedCourses([]);
+    localStorage.removeItem('plannedCourses');
   }
 
   async function addCourse() {
@@ -502,6 +526,10 @@ export default function PlannerPage() {
               {addingCourse ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
               Add Course
             </Button>
+            <Button variant="destructive" onClick={clearAllCourses} disabled={plannedCourses.length === 0}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear All
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -546,7 +574,7 @@ export default function PlannerPage() {
                         {group.totalCredits > 0 ? `${group.totalCredits} credits` : 'No courses'}
                       </CardDescription>
                     </div>
-                    {group.totalCredits > 10 && (
+                    {group.totalCredits > 17 && (
                       <div>
                         <Badge variant="destructive" className="text-xs">
                           <AlertTriangle className="h-3 w-3 mr-1" />
