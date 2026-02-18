@@ -432,10 +432,10 @@ export default function PlannerPage() {
               </SelectContent>
             </Select>
             <span className="text-muted-foreground ml-2">Years:</span>
-            <Select value={numYears.toString()} onValueChange={(v) => setNumYears(parseInt(v))}>
-              <SelectTrigger className="w-16 h-8"><SelectValue /></SelectTrigger>
+            <Select value={numYears.toString()} onValueChange={(v) => setNumYears(parseFloat(v))}>
+              <SelectTrigger className="w-20 h-8"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {[3, 4, 5, 6].map(n => (
+                {[3, 3.5, 4, 4.5, 5, 5.5, 6].map(n => (
                   <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
                 ))}
               </SelectContent>

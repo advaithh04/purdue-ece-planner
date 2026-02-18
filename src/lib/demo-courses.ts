@@ -1592,6 +1592,42 @@ const COMPE_SELECTIVES = [
 // Add all new courses to DEMO_COURSES
 DEMO_COURSES.push(...SCIENCE_SELECTIVES, ...ENGINEERING_BREADTH, ECE_36900, ...COMPE_SELECTIVES);
 
+// Update requirementCategory based on Computer Engineering requirements
+const CMPE_CORE_CODES = ['ECE 20001', 'ECE 20002', 'ECE 20007', 'ECE 20008', 'ECE 20100', 'ECE 20200', 'ECE 20700', 'ECE 26400', 'ECE 27000', 'ECE 30100', 'ECE 30200', 'ECE 36200', 'ECE 36400', 'ECE 36800'];
+const COMPE_SELECTIVE_CODES = ['ECE 30834', 'ECE 30862', 'ECE 33700', 'ECE 40400', 'ECE 43700', 'ECE 46100', 'ECE 46900', 'ECE 46300', 'ECE 50863', 'ECE 46800', 'ECE 57300', 'ECE 40862', 'ECE 56800', 'ECE 47300', 'ECE 57000'];
+const SPECIAL_CONTENT_CODES = ['ECE 20800', 'ECE 25500', 'ECE 27900', 'ECE 29600', 'ECE 37900', 'ECE 39600', 'ECE 47900', 'ECE 49600', 'EPCS 20100', 'EPCS 20200', 'EPCS 30100', 'EPCS 30200', 'EPCS 40100', 'EPCS 40200', 'ECE 40020', 'ECE 41200', 'ECE 41300', 'ECE 41400', 'ECE 41437', 'ECE 41438', 'ECE 41500', 'ECE 42300', 'ECE 43200', 'ECE 43300', 'ECE 43800', 'ECE 44000', 'ECE 44100', 'ECE 45300', 'ECE 45500', 'ECE 45600', 'ECE 45700', 'ECE 48300', 'ECE 50616', 'ECE 50653', 'ECE 51012', 'ECE 51018', 'ECE 51100', 'ECE 51300', 'ECE 52600', 'ECE 52800', 'ECE 53200', 'ECE 53800', 'ECE 54400', 'ECE 54700', 'ECE 55200', 'ECE 55700', 'ECE 55900', 'ECE 56200', 'ECE 56300', 'ECE 56900', 'ECE 57700', 'ECE 58000'];
+const ENGINEERING_BREADTH_CODES = ['AAE 20300', 'BME 20100', 'CE 29700', 'CE 35000', 'CE 35300', 'CE 35500', 'CHE 20500', 'EEE 35000', 'EEE 35500', 'IE 33500', 'IE 33600', 'ME 20000', 'ME 27000', 'ME 41300', 'MSE 23000', 'NUCL 20000', 'ABE 20100'];
+const MATH_CODES = ['MA 16500', 'MA 16100', 'MA 16600', 'MA 16200', 'MA 26100', 'MA 26500', 'MA 26200', 'MA 26600', 'ECE 36900', 'MA 30300', 'MA 30400', 'MA 38500', 'MA 42500', 'MA 51000', 'CS 31400'];
+const SCIENCE_CODES = ['CHM 11500', 'PHYS 17200', 'PHYS 27200'];
+const SCIENCE_SELECTIVE_CODES = ['BIOL 11000', 'BIOL 11100', 'BIOL 12100', 'BIOL 13500', 'BIOL 13100', 'CHM 11600', 'CHM 12400', 'PHYS 31000', 'PHYS 32200', 'PHYS 34200', 'PHYS 34400', 'PHYS 34202'];
+const SENIOR_DESIGN_CODES = ['ECE 47700', 'ECE 49022', 'EPCS 41100', 'EPCS 41200'];
+
+// Apply category updates to all courses
+DEMO_COURSES.forEach(course => {
+  if (CMPE_CORE_CODES.includes(course.code)) {
+    course.requirementCategory = 'cmpe-core';
+    course.isMajorRequirement = true;
+  } else if (COMPE_SELECTIVE_CODES.includes(course.code)) {
+    course.requirementCategory = 'compe-selective';
+    course.isTechElective = true;
+  } else if (SPECIAL_CONTENT_CODES.includes(course.code)) {
+    course.requirementCategory = 'special-content';
+    course.isTechElective = true;
+  } else if (ENGINEERING_BREADTH_CODES.includes(course.code)) {
+    course.requirementCategory = 'engineering-breadth';
+  } else if (MATH_CODES.includes(course.code)) {
+    course.requirementCategory = 'math';
+    course.isMajorRequirement = true;
+  } else if (SCIENCE_CODES.includes(course.code)) {
+    course.requirementCategory = 'science';
+    course.isMajorRequirement = true;
+  } else if (SCIENCE_SELECTIVE_CODES.includes(course.code)) {
+    course.requirementCategory = 'science-selective';
+  } else if (SENIOR_DESIGN_CODES.includes(course.code)) {
+    course.requirementCategory = 'senior-design';
+    course.isMajorRequirement = true;
+  }
+});
 
 // Shared in-memory storage for demo mode
 export const demoPlannedCourses: Map<string, any[]> = new Map();

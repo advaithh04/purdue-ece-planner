@@ -42,6 +42,16 @@ export async function GET(request: NextRequest) {
     const genEd = searchParams.get('genEd') === 'true';
     const labCredit = searchParams.get('labCredit') === 'true';
 
+    // Specific requirement categories
+    const cmpeCore = searchParams.get('cmpeCore') === 'true';
+    const compeSelective = searchParams.get('compeSelective') === 'true';
+    const specialContent = searchParams.get('specialContent') === 'true';
+    const engineeringBreadth = searchParams.get('engineeringBreadth') === 'true';
+    const mathRequirement = searchParams.get('mathRequirement') === 'true';
+    const scienceRequirement = searchParams.get('scienceRequirement') === 'true';
+    const scienceSelective = searchParams.get('scienceSelective') === 'true';
+    const seniorDesign = searchParams.get('seniorDesign') === 'true';
+
     // Build Prisma where clause
     const where: any = {};
 
@@ -176,6 +186,21 @@ export async function GET(request: NextRequest) {
 
     if (labCredit) {
       where.isLabCredit = true;
+    }
+
+    // Requirement category filters
+    const categoryFilters: string[] = [];
+    if (cmpeCore) categoryFilters.push('cmpe-core');
+    if (compeSelective) categoryFilters.push('compe-selective');
+    if (specialContent) categoryFilters.push('special-content');
+    if (engineeringBreadth) categoryFilters.push('engineering-breadth');
+    if (mathRequirement) categoryFilters.push('math');
+    if (scienceRequirement) categoryFilters.push('science');
+    if (scienceSelective) categoryFilters.push('science-selective');
+    if (seniorDesign) categoryFilters.push('senior-design', 'capstone');
+
+    if (categoryFilters.length > 0) {
+      where.requirementCategory = { in: categoryFilters };
     }
 
     // Try database first
@@ -315,6 +340,14 @@ export async function GET(request: NextRequest) {
     const codingHeavy = searchParams.get('codingHeavy') === 'true';
     const mathHeavy = searchParams.get('mathHeavy') === 'true';
     const projectBased = searchParams.get('projectBased') === 'true';
+    const cmpeCore = searchParams.get('cmpeCore') === 'true';
+    const compeSelective = searchParams.get('compeSelective') === 'true';
+    const specialContent = searchParams.get('specialContent') === 'true';
+    const engineeringBreadth = searchParams.get('engineeringBreadth') === 'true';
+    const mathRequirementFilter = searchParams.get('mathRequirement') === 'true';
+    const scienceRequirement = searchParams.get('scienceRequirement') === 'true';
+    const scienceSelective = searchParams.get('scienceSelective') === 'true';
+    const seniorDesign = searchParams.get('seniorDesign') === 'true';
 
     if (search) {
       const searchLower = search.toLowerCase();
@@ -372,6 +405,21 @@ export async function GET(request: NextRequest) {
 
     if (projectBased) {
       filteredCourses = filteredCourses.filter(c => c.isProjectBased);
+    }
+
+    // Requirement category filters
+    const categoryFilters: string[] = [];
+    if (cmpeCore) categoryFilters.push('cmpe-core');
+    if (compeSelective) categoryFilters.push('compe-selective');
+    if (specialContent) categoryFilters.push('special-content');
+    if (engineeringBreadth) categoryFilters.push('engineering-breadth');
+    if (mathRequirementFilter) categoryFilters.push('math');
+    if (scienceRequirement) categoryFilters.push('science');
+    if (scienceSelective) categoryFilters.push('science-selective');
+    if (seniorDesign) categoryFilters.push('senior-design', 'capstone');
+
+    if (categoryFilters.length > 0) {
+      filteredCourses = filteredCourses.filter(c => categoryFilters.includes(c.requirementCategory));
     }
 
     // Sort by GPA descending

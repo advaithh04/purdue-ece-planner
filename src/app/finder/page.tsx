@@ -116,6 +116,15 @@ interface FilterCriteria {
   techElective: boolean;
   genEd: boolean;
   labCredit: boolean;
+  // Specific requirement categories
+  cmpeCore: boolean;
+  compeSelective: boolean;
+  specialContent: boolean;
+  engineeringBreadth: boolean;
+  mathRequirement: boolean;
+  scienceRequirement: boolean;
+  scienceSelective: boolean;
+  seniorDesign: boolean;
 }
 
 const CAREER_OPTIONS = [
@@ -132,6 +141,7 @@ const CAREER_OPTIONS = [
 ];
 
 const LEVEL_OPTIONS = [
+  { value: '10000', label: '10000-Level (Freshman)' },
   { value: '20000', label: '20000-Level (Sophomore)' },
   { value: '30000', label: '30000-Level (Junior)' },
   { value: '40000', label: '40000-Level (Senior)' },
@@ -168,6 +178,14 @@ export default function CourseFinderPage() {
     techElective: false,
     genEd: false,
     labCredit: false,
+    cmpeCore: false,
+    compeSelective: false,
+    specialContent: false,
+    engineeringBreadth: false,
+    mathRequirement: false,
+    scienceRequirement: false,
+    scienceSelective: false,
+    seniorDesign: false,
   });
 
   const [results, setResults] = useState<Course[]>([]);
@@ -230,6 +248,14 @@ export default function CourseFinderPage() {
       if (filters.techElective) params.set('techElective', 'true');
       if (filters.genEd) params.set('genEd', 'true');
       if (filters.labCredit) params.set('labCredit', 'true');
+      if (filters.cmpeCore) params.set('cmpeCore', 'true');
+      if (filters.compeSelective) params.set('compeSelective', 'true');
+      if (filters.specialContent) params.set('specialContent', 'true');
+      if (filters.engineeringBreadth) params.set('engineeringBreadth', 'true');
+      if (filters.mathRequirement) params.set('mathRequirement', 'true');
+      if (filters.scienceRequirement) params.set('scienceRequirement', 'true');
+      if (filters.scienceSelective) params.set('scienceSelective', 'true');
+      if (filters.seniorDesign) params.set('seniorDesign', 'true');
 
       const res = await fetch(`/api/finder?${params.toString()}`);
       if (res.ok) {
@@ -273,6 +299,14 @@ export default function CourseFinderPage() {
       techElective: false,
       genEd: false,
       labCredit: false,
+      cmpeCore: false,
+      compeSelective: false,
+      specialContent: false,
+      engineeringBreadth: false,
+      mathRequirement: false,
+      scienceRequirement: false,
+      scienceSelective: false,
+      seniorDesign: false,
     });
     setResults([]);
     setSearched(false);
@@ -328,6 +362,14 @@ export default function CourseFinderPage() {
     filters.techElective,
     filters.genEd,
     filters.labCredit,
+    filters.cmpeCore,
+    filters.compeSelective,
+    filters.specialContent,
+    filters.engineeringBreadth,
+    filters.mathRequirement,
+    filters.scienceRequirement,
+    filters.scienceSelective,
+    filters.seniorDesign,
   ].filter(Boolean).length;
 
   return (
@@ -743,13 +785,102 @@ export default function CourseFinderPage() {
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-3 pt-2">
+                    <p className="text-xs text-muted-foreground mb-2">Computer Engineering Requirements</p>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="cmpeCore"
+                        checked={filters.cmpeCore}
+                        onCheckedChange={(checked) => updateFilter('cmpeCore', checked === true)}
+                      />
+                      <Label htmlFor="cmpeCore" className="cursor-pointer font-medium text-green-600">
+                        CmpE Core Requirements
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="compeSelective"
+                        checked={filters.compeSelective}
+                        onCheckedChange={(checked) => updateFilter('compeSelective', checked === true)}
+                      />
+                      <Label htmlFor="compeSelective" className="cursor-pointer">
+                        Computer Engineering Selectives
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="specialContent"
+                        checked={filters.specialContent}
+                        onCheckedChange={(checked) => updateFilter('specialContent', checked === true)}
+                      />
+                      <Label htmlFor="specialContent" className="cursor-pointer">
+                        Special Content Courses (6 cr max)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="seniorDesign"
+                        checked={filters.seniorDesign}
+                        onCheckedChange={(checked) => updateFilter('seniorDesign', checked === true)}
+                      />
+                      <Label htmlFor="seniorDesign" className="cursor-pointer">
+                        Senior Design
+                      </Label>
+                    </div>
+
+                    <div className="border-t pt-3 mt-3">
+                      <p className="text-xs text-muted-foreground mb-2">Other Requirements</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="engineeringBreadth"
+                        checked={filters.engineeringBreadth}
+                        onCheckedChange={(checked) => updateFilter('engineeringBreadth', checked === true)}
+                      />
+                      <Label htmlFor="engineeringBreadth" className="cursor-pointer">
+                        Engineering Breadth Selective
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="mathRequirement"
+                        checked={filters.mathRequirement}
+                        onCheckedChange={(checked) => updateFilter('mathRequirement', checked === true)}
+                      />
+                      <Label htmlFor="mathRequirement" className="cursor-pointer">
+                        Mathematics Requirement
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="scienceRequirement"
+                        checked={filters.scienceRequirement}
+                        onCheckedChange={(checked) => updateFilter('scienceRequirement', checked === true)}
+                      />
+                      <Label htmlFor="scienceRequirement" className="cursor-pointer">
+                        Science Requirement
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="scienceSelective"
+                        checked={filters.scienceSelective}
+                        onCheckedChange={(checked) => updateFilter('scienceSelective', checked === true)}
+                      />
+                      <Label htmlFor="scienceSelective" className="cursor-pointer">
+                        Science Selective
+                      </Label>
+                    </div>
+
+                    <div className="border-t pt-3 mt-3">
+                      <p className="text-xs text-muted-foreground mb-2">General Filters</p>
+                    </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="majorReq"
                         checked={filters.majorRequirement}
                         onCheckedChange={(checked) => updateFilter('majorRequirement', checked === true)}
                       />
-                      <Label htmlFor="majorReq" className="cursor-pointer font-medium text-green-600">
+                      <Label htmlFor="majorReq" className="cursor-pointer">
                         Counts for major requirement
                       </Label>
                     </div>
