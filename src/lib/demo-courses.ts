@@ -988,6 +988,23 @@ export const DEMO_COURSES: DemoCourse[] = [
     reviews: []
   },
   {
+    id: 'c50b', code: 'ECE 46900', name: 'Operating Systems Engineering', credits: 4,
+    description: 'OS internals, kernel development, system programming, process management.',
+    avgGPA: 2.72, difficultyRating: 3.8, workloadHours: 14, reviewCount: 125,
+    prerequisites: ['ECE 36800'], corequisites: [],
+    semesters: ['Spring'], careerTags: ['systems', 'software'],
+    interestTags: ['os', 'systems'], level: 46000,
+    professors: ['Various'], typicalDays: ['MWF'],
+    hasMorningSection: true, hasAfternoonSection: true, hasEveningSection: false,
+    hasFridayClass: true, hasOnlineOption: false, hasHybridOption: false,
+    numExams: 2, isProjectBased: true, isExamBased: true, homeworkIntensity: 'heavy',
+    isCodingHeavy: true, isMathHeavy: false, examIntensity: 'high', hasGroupProjects: false,
+    isMajorRequirement: false, isTechElective: true, isGenEd: false, isLabCredit: false,
+    requirementCategory: 'depth',
+    gradeDistribution: { A: 18, B: 28, C: 34, D: 12, F: 8 },
+    reviews: []
+  },
+  {
     id: 'c51', code: 'ECE 47300', name: 'Introduction to Artificial Intelligence', credits: 3,
     description: 'Search, knowledge representation, planning, learning, and AI applications.',
     avgGPA: 2.95, difficultyRating: 3.5, workloadHours: 12, reviewCount: 145,
